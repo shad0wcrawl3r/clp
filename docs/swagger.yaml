@@ -1,0 +1,1681 @@
+basePath: /api
+definitions:
+  database.BillingModel:
+    enum:
+    - prepaid
+    - postpaid
+    type: string
+    x-enum-varnames:
+    - BillingModelPrepaid
+    - BillingModelPostpaid
+  database.Deployment:
+    properties:
+      created_at:
+        $ref: '#/definitions/pgtype.Timestamptz'
+      deployment_type:
+        $ref: '#/definitions/database.DeploymentType'
+      environment:
+        $ref: '#/definitions/pgtype.Text'
+      id:
+        type: string
+      region:
+        $ref: '#/definitions/pgtype.Text'
+      tenant_id:
+        type: string
+      updated_at:
+        $ref: '#/definitions/pgtype.Timestamptz'
+    type: object
+  database.DeploymentType:
+    enum:
+    - aws
+    - azure
+    - gcp
+    - onprem
+    type: string
+    x-enum-varnames:
+    - DeploymentTypeAws
+    - DeploymentTypeAzure
+    - DeploymentTypeGcp
+    - DeploymentTypeOnprem
+  database.Endpoint:
+    properties:
+      agent_version:
+        $ref: '#/definitions/pgtype.Text'
+      created_at:
+        $ref: '#/definitions/pgtype.Timestamptz'
+      deployment_id:
+        type: string
+      first_seen:
+        $ref: '#/definitions/pgtype.Timestamptz'
+      hostname:
+        $ref: '#/definitions/pgtype.Text'
+      id:
+        type: string
+      last_seen:
+        $ref: '#/definitions/pgtype.Timestamptz'
+      os:
+        $ref: '#/definitions/pgtype.Text'
+      status:
+        $ref: '#/definitions/database.EndpointStatus'
+      tenant_id:
+        type: string
+    type: object
+  database.EndpointStatus:
+    enum:
+    - active
+    - inactive
+    - deleted
+    type: string
+    x-enum-varnames:
+    - EndpointStatusActive
+    - EndpointStatusInactive
+    - EndpointStatusDeleted
+  database.EntitlementEvent:
+    properties:
+      created_at:
+        $ref: '#/definitions/pgtype.Timestamptz'
+      deployment_id:
+        type: string
+      event_type:
+        type: string
+      id:
+        type: string
+      metadata:
+        items:
+          type: integer
+        type: array
+      subscription_id:
+        type: string
+      tenant_id:
+        type: string
+    type: object
+  database.Feature:
+    properties:
+      category:
+        $ref: '#/definitions/pgtype.Text'
+      created_at:
+        $ref: '#/definitions/pgtype.Timestamptz'
+      description:
+        $ref: '#/definitions/pgtype.Text'
+      feature_code:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  database.ListSubscriptionFeaturesRow:
+    properties:
+      created_at:
+        $ref: '#/definitions/pgtype.Timestamptz'
+      enabled:
+        type: boolean
+      feature_code:
+        type: string
+      feature_id:
+        type: string
+      limits:
+        items:
+          type: integer
+        type: array
+      name:
+        type: string
+      subscription_id:
+        type: string
+    type: object
+  database.Subscription:
+    properties:
+      auto_renew:
+        $ref: '#/definitions/pgtype.Bool'
+      billing_model:
+        $ref: '#/definitions/database.BillingModel'
+      created_at:
+        $ref: '#/definitions/pgtype.Timestamptz'
+      end_date:
+        $ref: '#/definitions/pgtype.Date'
+      id:
+        type: string
+      plan_code:
+        type: string
+      start_date:
+        $ref: '#/definitions/pgtype.Date'
+      status:
+        $ref: '#/definitions/database.SubscriptionStatus'
+      tenant_id:
+        type: string
+      trial_end:
+        $ref: '#/definitions/pgtype.Date'
+      updated_at:
+        $ref: '#/definitions/pgtype.Timestamptz'
+    type: object
+  database.SubscriptionStatus:
+    enum:
+    - trial
+    - active
+    - grace
+    - past_due
+    - cancelled
+    - expired
+    type: string
+    x-enum-varnames:
+    - SubscriptionStatusTrial
+    - SubscriptionStatusActive
+    - SubscriptionStatusGrace
+    - SubscriptionStatusPastDue
+    - SubscriptionStatusCancelled
+    - SubscriptionStatusExpired
+  database.Tenant:
+    properties:
+      created_at:
+        $ref: '#/definitions/pgtype.Timestamptz'
+      external_ref:
+        $ref: '#/definitions/pgtype.Text'
+      id:
+        type: string
+      name:
+        type: string
+      status:
+        $ref: '#/definitions/database.TenantStatus'
+      updated_at:
+        $ref: '#/definitions/pgtype.Timestamptz'
+    type: object
+  database.TenantCloudAccount:
+    properties:
+      cloud_account_id:
+        type: string
+      cloud_provider:
+        $ref: '#/definitions/database.DeploymentType'
+      created_at:
+        $ref: '#/definitions/pgtype.Timestamptz'
+      id:
+        type: string
+      tenant_id:
+        type: string
+    type: object
+  database.TenantStatus:
+    enum:
+    - active
+    - suspended
+    - deleted
+    type: string
+    x-enum-varnames:
+    - TenantStatusActive
+    - TenantStatusSuspended
+    - TenantStatusDeleted
+  database.UsageMetricsDaily:
+    properties:
+      created_at:
+        $ref: '#/definitions/pgtype.Timestamptz'
+      endpoints_active:
+        type: integer
+      eps_avg:
+        type: integer
+      eps_peak:
+        type: integer
+      events_ingested:
+        type: integer
+      id:
+        type: string
+      tenant_id:
+        type: string
+      usage_date:
+        $ref: '#/definitions/pgtype.Date'
+    type: object
+  handlers.ActiveEndpointCountResponse:
+    properties:
+      count:
+        example: 42
+        type: integer
+    type: object
+  handlers.AddSubscriptionFeatureRequest:
+    properties:
+      enabled:
+        example: true
+        type: boolean
+      feature_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      limits:
+        additionalProperties: {}
+        type: object
+    type: object
+  handlers.AddTenantCloudAccountRequest:
+    properties:
+      cloud_account_id:
+        example: "123456789012"
+        type: string
+      cloud_provider:
+        example: aws
+        type: string
+    type: object
+  handlers.CreateDeploymentRequest:
+    properties:
+      deployment_type:
+        example: aws
+        type: string
+      environment:
+        example: production
+        type: string
+      region:
+        example: us-east-1
+        type: string
+    type: object
+  handlers.CreateEntitlementEventRequest:
+    properties:
+      deployment_id:
+        example: 123e4567-e89b-12d3-a456-426614174002
+        type: string
+      event_type:
+        example: feature_enabled
+        type: string
+      metadata:
+        additionalProperties: {}
+        type: object
+      subscription_id:
+        example: 123e4567-e89b-12d3-a456-426614174001
+        type: string
+      tenant_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+    type: object
+  handlers.CreateFeatureRequest:
+    properties:
+      category:
+        example: analytics
+        type: string
+      description:
+        example: Enables advanced analytics dashboards
+        type: string
+      feature_code:
+        example: ADVANCED_ANALYTICS
+        type: string
+      name:
+        example: Advanced Analytics
+        type: string
+    type: object
+  handlers.CreateSubscriptionRequest:
+    properties:
+      auto_renew:
+        example: true
+        type: boolean
+      billing_model:
+        example: prepaid
+        type: string
+      end_date:
+        example: "2027-01-01"
+        type: string
+      plan_code:
+        example: enterprise
+        type: string
+      start_date:
+        example: "2026-01-01"
+        type: string
+      status:
+        example: trial
+        type: string
+      trial_end:
+        example: "2026-02-01"
+        type: string
+    type: object
+  handlers.CreateTenantRequest:
+    properties:
+      external_ref:
+        example: ext-acme-123
+        type: string
+      name:
+        example: Acme Corp
+        type: string
+      status:
+        example: active
+        type: string
+    type: object
+  handlers.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  handlers.ExpireSubscriptionsResponse:
+    properties:
+      expired:
+        example: 3
+        type: integer
+    type: object
+  handlers.RegisterEndpointRequest:
+    properties:
+      agent_version:
+        example: 2.1.0
+        type: string
+      deployment_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      hostname:
+        example: agent-prod-01.acme.com
+        type: string
+      os:
+        example: linux
+        type: string
+    type: object
+  handlers.SearchEventsRequest:
+    properties:
+      limit:
+        example: 50
+        type: integer
+      metadata:
+        additionalProperties: {}
+        type: object
+    type: object
+  handlers.UpdateEndpointStatusRequest:
+    properties:
+      status:
+        example: inactive
+        type: string
+    type: object
+  handlers.UpdateSubscriptionStatusRequest:
+    properties:
+      status:
+        example: active
+        type: string
+    type: object
+  handlers.UpdateTenantStatusRequest:
+    properties:
+      status:
+        example: suspended
+        type: string
+    type: object
+  handlers.UpsertUsageRequest:
+    properties:
+      endpoints_active:
+        example: 150
+        type: integer
+      eps_avg:
+        example: 1736
+        type: integer
+      eps_peak:
+        example: 4200
+        type: integer
+      events_ingested:
+        example: 1500000
+        type: integer
+      usage_date:
+        example: "2026-03-07"
+        type: string
+    type: object
+  pgtype.Bool:
+    properties:
+      bool:
+        type: boolean
+      valid:
+        type: boolean
+    type: object
+  pgtype.Date:
+    properties:
+      infinityModifier:
+        $ref: '#/definitions/pgtype.InfinityModifier'
+      time:
+        type: string
+      valid:
+        type: boolean
+    type: object
+  pgtype.InfinityModifier:
+    enum:
+    - 1
+    - 0
+    - -1
+    format: int32
+    type: integer
+    x-enum-varnames:
+    - Infinity
+    - Finite
+    - NegativeInfinity
+  pgtype.Text:
+    properties:
+      string:
+        type: string
+      valid:
+        type: boolean
+    type: object
+  pgtype.Timestamptz:
+    properties:
+      infinityModifier:
+        $ref: '#/definitions/pgtype.InfinityModifier'
+      time:
+        type: string
+      valid:
+        type: boolean
+    type: object
+host: localhost:3000
+info:
+  contact: {}
+  description: Cloud License Platform — multi-tenant SaaS licensing and entitlement
+    management.
+  title: CLP API
+  version: "1.0"
+paths:
+  /admin/subscriptions/expire:
+    post:
+      description: Sets status to "expired" for all subscriptions whose end_date is
+        in the past and are not already expired or cancelled.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.ExpireSubscriptionsResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Expire overdue subscriptions
+      tags:
+      - admin
+  /cloud-accounts/{id}:
+    delete:
+      description: Removes a cloud provider account association by its UUID.
+      parameters:
+      - description: Cloud account UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Delete a cloud account mapping
+      tags:
+      - cloud-accounts
+  /deployments/{id}:
+    delete:
+      description: Permanently removes a deployment by UUID.
+      parameters:
+      - description: Deployment UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Delete a deployment
+      tags:
+      - deployments
+    get:
+      description: Returns a deployment by UUID.
+      parameters:
+      - description: Deployment UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Deployment'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Get a deployment
+      tags:
+      - deployments
+  /endpoints/{id}:
+    delete:
+      description: Permanently removes an endpoint/agent by UUID.
+      parameters:
+      - description: Endpoint UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Delete an endpoint
+      tags:
+      - endpoints
+    get:
+      description: Returns an endpoint/agent by UUID.
+      parameters:
+      - description: Endpoint UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Endpoint'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Get an endpoint
+      tags:
+      - endpoints
+  /endpoints/{id}/heartbeat:
+    post:
+      description: Updates the last_seen timestamp for the endpoint to now.
+      parameters:
+      - description: Endpoint UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Record endpoint heartbeat
+      tags:
+      - endpoints
+  /endpoints/{id}/status:
+    patch:
+      consumes:
+      - application/json
+      description: Sets the endpoint status (active, inactive, deleted).
+      parameters:
+      - description: Endpoint UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Status
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateEndpointStatusRequest'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Update endpoint status
+      tags:
+      - endpoints
+  /events:
+    get:
+      description: Returns entitlement events filtered by event type, newest first.
+      parameters:
+      - description: Event type
+        in: query
+        name: type
+        required: true
+        type: string
+      - description: Max results (default 50)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/database.EntitlementEvent'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: List events by type
+      tags:
+      - events
+    post:
+      consumes:
+      - application/json
+      description: Records an entitlement lifecycle event with arbitrary metadata.
+      parameters:
+      - description: Event
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateEntitlementEventRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/database.EntitlementEvent'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Create an entitlement event
+      tags:
+      - events
+  /events/search:
+    post:
+      consumes:
+      - application/json
+      description: Returns events whose metadata contains the provided JSON fragment
+        (JSONB containment query).
+      parameters:
+      - description: Search query
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.SearchEventsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/database.EntitlementEvent'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Search events by metadata
+      tags:
+      - events
+  /features:
+    get:
+      description: Returns the full feature catalog ordered by feature code.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/database.Feature'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: List all features
+      tags:
+      - features
+    post:
+      consumes:
+      - application/json
+      description: Adds a new feature to the catalog.
+      parameters:
+      - description: Feature
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateFeatureRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/database.Feature'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Create a feature
+      tags:
+      - features
+  /features/{code}:
+    get:
+      description: Returns a feature by its unique feature code.
+      parameters:
+      - description: Feature code
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Feature'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Get feature by code
+      tags:
+      - features
+  /features/{id}:
+    delete:
+      description: Permanently removes a feature from the catalog by UUID.
+      parameters:
+      - description: Feature UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Delete a feature
+      tags:
+      - features
+  /subscriptions/{id}:
+    get:
+      description: Returns a subscription by UUID.
+      parameters:
+      - description: Subscription UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Subscription'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Get a subscription
+      tags:
+      - subscriptions
+  /subscriptions/{id}/cancel:
+    post:
+      description: Sets the subscription status to cancelled.
+      parameters:
+      - description: Subscription UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Cancel a subscription
+      tags:
+      - subscriptions
+  /subscriptions/{id}/events:
+    get:
+      description: Returns all entitlement events for the given subscription, newest
+        first.
+      parameters:
+      - description: Subscription UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/database.EntitlementEvent'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: List events for a subscription
+      tags:
+      - subscriptions
+  /subscriptions/{id}/features:
+    get:
+      description: Returns the features and their enabled/limit state for the given
+        subscription.
+      parameters:
+      - description: Subscription UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/database.ListSubscriptionFeaturesRow'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: List features for a subscription
+      tags:
+      - subscriptions
+    post:
+      consumes:
+      - application/json
+      description: Upserts a feature entitlement for the given subscription (idempotent).
+      parameters:
+      - description: Subscription UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Feature entitlement
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.AddSubscriptionFeatureRequest'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Add or update a feature on a subscription
+      tags:
+      - subscriptions
+  /subscriptions/{id}/features/{featureId}:
+    delete:
+      description: Removes the feature entitlement for the given feature ID from the
+        subscription.
+      parameters:
+      - description: Subscription UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Feature UUID
+        in: path
+        name: featureId
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Remove a feature from a subscription
+      tags:
+      - subscriptions
+  /subscriptions/{id}/status:
+    patch:
+      consumes:
+      - application/json
+      description: Sets the subscription status (trial, active, grace, past_due, cancelled,
+        expired).
+      parameters:
+      - description: Subscription UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Status
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateSubscriptionStatusRequest'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Update subscription status
+      tags:
+      - subscriptions
+  /tenants:
+    get:
+      description: Returns a paginated list of tenants ordered by creation time descending.
+      parameters:
+      - description: Page size (default 20)
+        in: query
+        name: limit
+        type: integer
+      - description: Page offset (default 0)
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/database.Tenant'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: List tenants
+      tags:
+      - tenants
+    post:
+      consumes:
+      - application/json
+      description: Creates a new tenant. Status defaults to "active" if omitted.
+      parameters:
+      - description: Tenant
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateTenantRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/database.Tenant'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Create a tenant
+      tags:
+      - tenants
+  /tenants/{id}:
+    delete:
+      description: Permanently deletes a tenant by UUID.
+      parameters:
+      - description: Tenant UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Delete a tenant
+      tags:
+      - tenants
+    get:
+      description: Returns a single tenant by UUID.
+      parameters:
+      - description: Tenant UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Tenant'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Get a tenant
+      tags:
+      - tenants
+  /tenants/{id}/cloud-accounts:
+    get:
+      description: Returns all cloud provider account associations for the given tenant.
+      parameters:
+      - description: Tenant UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/database.TenantCloudAccount'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: List cloud account mappings for a tenant
+      tags:
+      - cloud-accounts
+    post:
+      consumes:
+      - application/json
+      description: Associates a cloud provider account ID with the given tenant.
+      parameters:
+      - description: Tenant UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Cloud account
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.AddTenantCloudAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/database.TenantCloudAccount'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Add a cloud account mapping for a tenant
+      tags:
+      - cloud-accounts
+  /tenants/{id}/deployments:
+    get:
+      description: Returns all deployments belonging to the given tenant, newest first.
+      parameters:
+      - description: Tenant UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/database.Deployment'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: List deployments for a tenant
+      tags:
+      - deployments
+    post:
+      consumes:
+      - application/json
+      description: Registers a new cloud deployment (aws, azure, gcp, onprem) for
+        the given tenant.
+      parameters:
+      - description: Tenant UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Deployment
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateDeploymentRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/database.Deployment'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Create a deployment for a tenant
+      tags:
+      - deployments
+  /tenants/{id}/endpoints:
+    get:
+      description: Returns all endpoints/agents registered under the given tenant,
+        newest first.
+      parameters:
+      - description: Tenant UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/database.Endpoint'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: List endpoints for a tenant
+      tags:
+      - endpoints
+    post:
+      consumes:
+      - application/json
+      description: Registers a new agent/endpoint under the given tenant.
+      parameters:
+      - description: Tenant UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Endpoint
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.RegisterEndpointRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/database.Endpoint'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Register an endpoint for a tenant
+      tags:
+      - endpoints
+  /tenants/{id}/endpoints/count:
+    get:
+      description: Returns the number of endpoints with status "active" for the given
+        tenant.
+      parameters:
+      - description: Tenant UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.ActiveEndpointCountResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Count active endpoints for a tenant
+      tags:
+      - endpoints
+  /tenants/{id}/events:
+    get:
+      description: Returns entitlement events for the given tenant, newest first,
+        with pagination.
+      parameters:
+      - description: Tenant UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Page size (default 50)
+        in: query
+        name: limit
+        type: integer
+      - description: Page offset (default 0)
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/database.EntitlementEvent'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: List events for a tenant
+      tags:
+      - events
+  /tenants/{id}/status:
+    patch:
+      consumes:
+      - application/json
+      description: Sets the tenant status (active, suspended, deleted).
+      parameters:
+      - description: Tenant UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Status
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateTenantStatusRequest'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Update tenant status
+      tags:
+      - tenants
+  /tenants/{id}/subscriptions:
+    get:
+      description: Returns all subscriptions for the given tenant, newest first.
+      parameters:
+      - description: Tenant UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/database.Subscription'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: List subscriptions for a tenant
+      tags:
+      - subscriptions
+    post:
+      consumes:
+      - application/json
+      description: Creates a new subscription for the given tenant.
+      parameters:
+      - description: Tenant UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Subscription
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateSubscriptionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/database.Subscription'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Create a subscription for a tenant
+      tags:
+      - subscriptions
+  /tenants/{id}/subscriptions/active:
+    get:
+      description: Returns the most recent subscription in trial, active, or grace
+        status.
+      parameters:
+      - description: Tenant UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Subscription'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Get active subscription for a tenant
+      tags:
+      - subscriptions
+  /tenants/{id}/usage:
+    get:
+      description: Returns daily usage metrics for the given tenant between from and
+        to dates (inclusive), newest first.
+      parameters:
+      - description: Tenant UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Start date (YYYY-MM-DD)
+        in: query
+        name: from
+        required: true
+        type: string
+      - description: End date (YYYY-MM-DD)
+        in: query
+        name: to
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/database.UsageMetricsDaily'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Get usage metrics for a date range
+      tags:
+      - usage
+    put:
+      consumes:
+      - application/json
+      description: Creates or updates usage metrics for the given tenant and date
+        (idempotent).
+      parameters:
+      - description: Tenant UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Usage metrics
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpsertUsageRequest'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Upsert daily usage metrics for a tenant
+      tags:
+      - usage
+  /tenants/{id}/usage/{date}:
+    get:
+      description: Returns usage metrics for the given tenant on the specified date
+        (YYYY-MM-DD).
+      parameters:
+      - description: Tenant UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Date (YYYY-MM-DD)
+        in: path
+        name: date
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.UsageMetricsDaily'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Get usage metrics for a specific date
+      tags:
+      - usage
+  /tenants/external/{ref}:
+    get:
+      description: Looks up a tenant using its external system reference identifier.
+      parameters:
+      - description: External reference
+        in: path
+        name: ref
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Tenant'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Get tenant by external reference
+      tags:
+      - tenants
+swagger: "2.0"

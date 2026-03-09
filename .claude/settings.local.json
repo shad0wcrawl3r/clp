@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(go list:*)",
+      "Bash(go get:*)",
+      "Bash(go:*)",
+      "Bash(yarn shadcn:*)",
+      "Read(//home/ashwin/go/pkg/mod/github.com/gofiber/fiber/v3@v3.1.0/middleware/static/**)",
+      "Bash(yarn build:*)",
+      "Bash(just migrate:*)",
+      "Bash(source .env:*)",
+      "Bash(just sqlc:*)"
+    ]
+  }
+}

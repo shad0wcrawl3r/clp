@@ -1,0 +1,21 @@
+[http]
+host = "0.0.0.0"
+port = 8080
+readTimeout = "15s"
+writeTimeout = "15s"
+
+[jwt]
+secret = "secret"
+expiry = "15m"
+refreshExpiry = "168h"  # 7 days
+
+
+[postgres]
+# If connectionString is provided, other fields will be ignored
+# connectionString = "postgres://postgres@postgres:5432/mydb?sslmode=disable"
+host = "localhost"
+port = 5432
+db = "postgres"
+user = "postgres"
+password = "postgres"
+sslMode = "disable"
